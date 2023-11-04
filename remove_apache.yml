@@ -1,0 +1,48 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+
+#  - name: Update apt
+#    apt:
+#      update_cache: yes
+#
+#  - name: remove apache2 package
+#    apt:
+#      name: apache2
+#      state: absent
+#
+#  - name: remove php support for apache
+#    apt:
+#      name: libapache2-mod-php
+#      state: absent
+#
+#  - name: Update dnf
+#    ansible.builtin.dnf:
+#      update_cache: yes
+#      use_backend: dnf4
+#
+#  - name: remove httpd package
+#    ansible.builtin.dnf:
+#      name: httpd
+#      state: absent
+#      use_backend: dnf4
+#
+#  - name: remove php support for httpd
+#    ansible.builtin.dnf:
+#      name: php
+#      state: absent
+#      use_backend: dnf4
+#
+
+  - name: Remove apache and php packages for both Amazon and Ubuntu
+    package:
+      update_cache: yes
+      name: 
+        - "{{ apache_package }}"
+        - "{{ php_package }}"
+      state: absent   
+
+
