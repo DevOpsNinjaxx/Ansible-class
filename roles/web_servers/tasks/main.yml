@@ -1,0 +1,34 @@
+- name: Install apache2 and php packages
+  tags: apache, httpd, php
+  package:
+    update_cache: yes
+    name: 
+      - "{{ apache_package_name }}"
+      - "{{ php_package_name }}"
+    state: latest
+
+- name: start httpd (CentOS)
+  tags: centos,amazon, httpd, apache
+  service:
+    name: "{{ apache_service }}"
+    state: started
+    enabled: yes
+
+- name: Change e-mail address for apache admin
+  tags: apache,centos,httpd
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: '^ServerAdmin'
+    line: ServerAdmin amin4712.ndakun@gmail.com
+  when: ansible_distribution in  ["Amazon", "CentOS"]
+  notify: restart_apache
+
+
+#- name: copy website files
+#  tags: apache, copy
+#  copy:
+#    src: neogym-html/
+#    dest: /var/www/html/
+#    owner: root
+#    group: root
+#    mode: 0644 

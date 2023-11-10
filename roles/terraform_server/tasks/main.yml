@@ -1,0 +1,15 @@
+- name: Install  unzip
+  tags: terraform, unzip
+  package:
+    name: unzip
+    state: latest
+
+- name: Install terraform
+  tags: terraform
+  unarchive:
+    src: https://releases.hashicorp.com/terraform/1.6.3/terraform_1.6.3_linux_386.zip
+    remote_src: yes
+    dest: /usr/local/bin/
+    owner: root
+    group: root
+    mode: 0755

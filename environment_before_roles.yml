@@ -1,0 +1,80 @@
+---
+- hosts: all
+  become: true
+  tasks: 
+    - name: Update all servers
+      tags: always
+      package:
+        update_cache: yes
+    
+- hosts: terraform_server
+  become: true
+  tasks:
+    - name: Install  unzip
+      tags: terraform, unzip
+      package:
+        name: unzip
+        state: latest
+
+    - name: Install terraform
+      tags: terraform
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/1.6.3/terraform_1.6.3_linux_386.zip
+        remote_src: yes
+        dest: /usr/local/bin/
+        owner: root
+        group: root
+        mode: 0755
+    
+  
+
+- hosts: web_servers
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Install apache2 and php packages
+      tags: apache, httpd, php
+      package:
+        update_cache: yes
+        name: 
+          - "{{ apache_package_name }}"
+          - "{{ php_package_name }}"
+        state: latest
+
+    - name: start httpd (CentOS)
+      tags: centos,amazon, httpd, apache
+      service:
+        name: "{{ apache_service }}"
+        state: started
+        enabled: yes
+
+    - name: Change e-mail address for apache admin
+      tags: apache,centos,httpd
+      lineinfile:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: '^ServerAdmin'
+        line: ServerAdmin amin4712.ndakun@gmail.com
+      when: ansible_distribution in  ["Amazon", "CentOS"]
+      notify: restart_apache
+
+
+    #- name: copy website files
+    #  tags: apache, copy
+    #  copy:
+    #    src: neogym-html/
+    #    dest: /var/www/html/
+    #    owner: root
+    #    group: root
+    #    mode: 0644 
+
+
+- hosts: db_server
+  tags: db, mysql
+  become: true
+  gather_facts: false
+  tasks:
+    - name: install mysql
+      apt:
+        name: mysql-server
+        state: latest
+    

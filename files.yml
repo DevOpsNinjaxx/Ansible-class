@@ -1,0 +1,22 @@
+- hosts: all
+  become: true
+  tasks: 
+    - name: Update all servers
+      tags: always
+      package:
+        update_cache: yes
+  
+
+- hosts: web_servers
+  become: true
+  gather_facts: false
+  tasks:
+
+    - name: copy website files
+      tags: ubuntu
+      copy:
+        src: ~/neogym-html/
+        dest: /var/www/html/
+        owner: root
+        group: root
+        mode: 0644

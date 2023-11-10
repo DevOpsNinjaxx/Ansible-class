@@ -1,41 +1,28 @@
 ---
-
 - hosts: all
   become: true
   tasks: 
     - name: Update all servers
+      tags: always
       package:
         update_cache: yes
+    
+- hosts: terraform_server
+  become: true
+  roles:
+    - terraform_server
   
 
 - hosts: web_servers
   become: true
-  tasks:
-
-    - name: Install apache2 and php packages using apt
-      apt:
-        update_cache: yes
-        name: 
-          - apache2
-          - libapache2-mod-php
-        state: latest
-      when: ansible_distribution in  ["Ubuntu", "Debian"]
-
-    - name: Install httpd and php using dnf
-      ansible.builtin.dnf:
-        update_cache: yes
-        name: 
-          - httpd
-          - php
-        state: latest
-        use_backend: dnf4
-      when: ansible_distribution in  ["Amazon", "CentOS"]
+  gather_facts: false
+  roles:
+    - web_servers
 
 
 - hosts: db_server
+  tags: db, mysql
   become: true
-  tasks:
-    - name: install mysql
-      apt:
-        name: mysql-server
-        state: latest
+  gather_facts: false
+  roles:
+    - db_server
